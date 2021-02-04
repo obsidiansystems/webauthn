@@ -4,6 +4,7 @@ module WebAuthn.AndroidSafetyNet (
   verify
 ) where
 
+import Control.Monad.Fail (MonadFail)
 import qualified Data.Aeson as J
 import Data.ByteString (ByteString)
 import Data.Text (pack)
