@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE StrictData #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -58,7 +59,11 @@ import Data.Aeson as J
     )
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Base64.URL as Base64
+#if MIN_VERSION_base16_bytestring(1,0,0)
 import Data.ByteString.Base16 as Base16 (decodeLenient, encode )
+#else
+import Data.ByteString.Base16 as Base16 (decode, encode )
+#endif
 import qualified Data.Hashable as H
 import qualified Data.Map as Map
 import Data.Text (Text)
@@ -217,7 +222,11 @@ instance ToJSON CredentialPublicKey where
 newtype AAGUID = AAGUID { unAAGUID :: ByteString } deriving (Show, Eq)
 
 instance FromJSON AAGUID where
+#if MIN_VERSION_base16_bytestring(1,0,0)
   parseJSON v = AAGUID . Base16.decodeLenient . T.encodeUtf8 <$> parseJSON v
+#else
+  parseJSON v = AAGUID . fst . Base16.decode . T.encodeUtf8 <$> parseJSON v
+#endif
 
 instance ToJSON AAGUID where
   toJSON = toJSON . T.decodeUtf8 . Base16.encode . unAAGUID
