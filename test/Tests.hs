@@ -13,7 +13,7 @@ import Data.ByteString ( ByteString )
 import Data.Either ( isRight )
 import qualified Data.ByteString.Lazy as BL
 import WebAuthn.Types
-    ( PublicKeyCredentialCreationOptions(PublicKeyCredentialCreationOptions),
+    ( PublicKeyCredentialCreationOptions(PublicKeyCredentialCreationOptions, pubKeyCredParams),
       PubKeyCredParam(PubKeyCredParam),
       PubKeyCredAlg(ES256),
       PublicKeyCredentialDescriptor(PublicKeyCredentialDescriptor),
@@ -128,7 +128,7 @@ genericCredentialTest name TestPublicKeyCredential{..} = testCaseSteps name $ \s
   step "Registeration check..."
   Just k <- readCertificateStore "test/cacert.pem"
   let pkcco = PublicKeyCredentialCreationOptions (defaultRelyingParty (Origin "https" "webauthn.biz" Nothing)) (Base64ByteString "12343434") (User (Base64ByteString "id") Nothing Nothing) (PubKeyCredParam PublicKey ES256 :| []) Nothing Nothing Nothing Nothing (Just (PublicKeyCredentialDescriptor PublicKey (Base64ByteString "1234") (Just (BLE :| []))  :| []))
-  eth <- registerCredential pkcco k challenge defRp Nothing False clientDataJSON attestationObject
+  eth <- registerCredential (pubKeyCredParams pkcco) (Just k) challenge defRp Nothing False clientDataJSON attestationObject
   assertBool (show eth) (isRight eth)
   let Right cdata = eth
   step "Verification check..."

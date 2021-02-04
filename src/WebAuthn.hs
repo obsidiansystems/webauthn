@@ -44,6 +44,7 @@ import qualified Data.Serialize as C
 import qualified Data.ByteArray as BA
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as BL
+import Data.List.NonEmpty
 import qualified Data.Map as Map
 import Data.Text (Text)
 import Crypto.Random
@@ -139,8 +140,8 @@ encodeAttestation attestationObject = CBOR.encodeMapLen 3
       AF_None -> CBOR.encodeString "none"
 
 -- | 7.1. Registering a New Credential
-registerCredential :: MonadIO m => PublicKeyCredentialCreationOptions
-  -> X509.CertificateStore
+registerCredential :: MonadIO m => NonEmpty PubKeyCredParam
+  -> Maybe X509.CertificateStore
   -> Challenge
   -> RelyingParty
   -> Maybe Text -- ^ Token Binding ID in base64
@@ -148,7 +149,7 @@ registerCredential :: MonadIO m => PublicKeyCredentialCreationOptions
   -> ByteString -- ^ clientDataJSON
   -> ByteString -- ^ attestationObject
   -> m (Either VerificationFailure AttestedCredentialData)
-registerCredential opts cs challenge (RelyingParty rpOrigin rpId _ _) tbi verificationRequired clientDataJSON attestationObjectBS = runExceptT $ do
+registerCredential pubKeyCredParams mcs challenge (RelyingParty rpOrigin rpId _ _) tbi verificationRequired clientDataJSON attestationObjectBS = runExceptT $ do
   _ <- hoistEither runAttestationCheck
   attestationObject <- hoistEither $ either (Left . CBORDecodeError "registerCredential") (pure . snd)
         $ CBOR.deserialiseFromBytes decodeAttestation
@@ -161,7 +162,7 @@ registerCredential opts cs challenge (RelyingParty rpOrigin rpId _ _) tbi verifi
     AF_FIDO_U2F s -> hoistEither $ U2F.verify s ad clientDataHash
     AF_Packed s -> hoistEither $ Packed.verify s mAdPubKey ad (authData attestationObject) clientDataHash
     AF_TPM s -> hoistEither $ TPM.verify s ad (authData attestationObject) clientDataHash
-    AF_AndroidSafetyNet s -> Android.verify cs s (authData attestationObject) clientDataHash
+    AF_AndroidSafetyNet s -> maybe (throwE (UnsupportedAttestationFormat "AndroidSafetyNet")) (\cs -> Android.verify cs s (authData attestationObject) clientDataHash) mcs
     AF_None -> pure ()
     _ -> throwE (UnsupportedAttestationFormat (pack $ show (attStmt attestationObject)))
 
@@ -196,7 +197,7 @@ registerCredential opts cs challenge (RelyingParty rpOrigin rpId _ _) tbi verifi
         Just k -> do
           parsedPubKey <- either throwE return $ parsePublicKey k
           let hasProperAlg pubKeyParam = hasMatchingAlg parsedPubKey $ alg (pubKeyParam :: PubKeyCredParam)
-          when (not . any hasProperAlg $ pubKeyCredParams opts) $ throwE MalformedAuthenticatorData
+          when (not . any hasProperAlg $ pubKeyCredParams) $ throwE MalformedAuthenticatorData
           return $ Just parsedPubKey
         -- non present public key will fail anyway or the fmt == 'none'
         Nothing -> return Nothing
