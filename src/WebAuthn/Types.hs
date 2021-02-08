@@ -4,6 +4,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE PackageImports #-}
 module WebAuthn.Types (
   -- * Relying party
   RelyingParty(..)
@@ -71,7 +72,7 @@ import Data.Text.Encoding ( decodeUtf8, encodeUtf8 )
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Data.Text.Read as T
-import Crypto.Hash ( SHA256, Digest )
+import "cryptonite" Crypto.Hash ( SHA256, Digest )
 import qualified Codec.CBOR.Term as CBOR
 import qualified Codec.CBOR.Read as CBOR
 import qualified Codec.Serialise as CBOR

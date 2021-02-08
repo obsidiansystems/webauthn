@@ -1,3 +1,4 @@
+{-# LANGUAGE PackageImports #-}
 module WebAuthn.Packed where
 
 import Data.ByteString.Lazy (fromStrict)
@@ -8,7 +9,7 @@ import Data.Maybe (isJust)
 import qualified Data.ASN1.OID as OID (OID, getObjectID)
 import Data.List (find)
 import Control.Monad (unless)
-import Crypto.Hash
+import "cryptonite" Crypto.Hash
 import qualified Data.ByteString as BS
 import qualified Data.ByteArray as BA
 import qualified Data.X509 as X509

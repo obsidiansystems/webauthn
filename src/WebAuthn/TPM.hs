@@ -1,8 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PackageImports #-}
 module WebAuthn.TPM where
 
 import Data.ByteString (ByteString)
-import Crypto.Hash (Digest, SHA256)
+import "cryptonite" Crypto.Hash (Digest, SHA256)
 import qualified Data.X509 as X509
 import qualified Codec.CBOR.Term as CBOR
 import qualified Codec.CBOR.Decoding as CBOR

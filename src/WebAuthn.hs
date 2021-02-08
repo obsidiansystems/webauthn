@@ -2,6 +2,7 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE PackageImports #-}
 -----------------------------------------------------------------------
 -- |
 -- Module      :  WebAuthn
@@ -47,8 +48,8 @@ import qualified Data.ByteString.Lazy as BL
 import Data.List.NonEmpty
 import qualified Data.Map as Map
 import Data.Text (Text)
-import Crypto.Random
-import Crypto.Hash
+import "cryptonite" Crypto.Random
+import "cryptonite" Crypto.Hash
 import qualified Codec.CBOR.Term as CBOR
 import qualified Codec.CBOR.Read as CBOR
 import qualified Codec.CBOR.Decoding as CBOR

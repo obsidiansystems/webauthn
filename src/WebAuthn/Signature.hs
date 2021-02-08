@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PackageImports #-}
 module WebAuthn.Signature (PublicKey(..)
   , parsePublicKey
   , verifySig
@@ -12,7 +13,7 @@ import Data.Bits (unsafeShiftL, (.|.))
 import qualified Data.ByteArray as BA
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as BL
-import Crypto.Hash (SHA256(..), hashWith)
+import "cryptonite" Crypto.Hash (SHA256(..), hashWith)
 import qualified Crypto.PubKey.ECC.ECDSA as EC
 import qualified Crypto.PubKey.ECC.Types as EC
 import qualified Crypto.PubKey.RSA.Types as RSA

@@ -1,8 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE PackageImports #-}
 module WebAuthn.FIDOU2F where
 
-import Crypto.Hash
+import "cryptonite" Crypto.Hash
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Builder as BB
 import qualified Data.ByteString.Lazy as BL
